@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+
+    <body>
+        <!--1. Declarative way of specifying html - easier to comprehend- generally one way of doing things -->
+        <!-- <div>
+         <h1>Hello</h1>
+         <h2>World</h2>
+       </div> -->
+
+        <!--2. Imperatively creating elements and adding them to DOM -->
+        <!-- <script>
+              
+              const h1 = document.createElement('h1');
+              const h2 = document.createElement('h2');
+              h1.textContent = 'Hello';
+              const rootElement = document.getElementById('root');
+              rootElement.append(h1);
+
+
+              h2.textContent = 'World';
+            
+              rootElement.append(h2);
+        </script>  -->
+
+        <!--3. Using react scripts from CDN and using them to create elements and render -->
+        <div id="root"></div>
+        <script src="https://unpkg.com/react@16.13.1/umd/react.development.js"></script>
+        <script src="https://unpkg.com/react-dom@16.13.1/umd/react-dom.development.js"></script>
+
+        <script type="module">
+            const element = React.createElement('div', {
+                className: 'container',
+                children: 'Hello World',
+            });
+
+            ReactDOM.render(element, document.getElementById('root'));
+        </script>
+    </body>
+</html>

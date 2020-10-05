@@ -1,0 +1,11 @@
+# Learn more on Declarative and Imperative programming
+[Read here](https://ui.dev/imperative-vs-declarative-programming/)
+
+# Implement the following using HTML, and then DOM API followed by the React API
+
+A div container
+    A todo heading  (h1)
+    todo description (a p tag)
+    A checkbox to mark the todo as done
+End div 
+
