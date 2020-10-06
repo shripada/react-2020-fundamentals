@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <!-- html declarative -->
+        <!-- <div>
+            <h1>Todo</h1>
+            <p>todo description here</p>
+            <input type="checkbox" name="todo" id="todo-done" />
+            <label for="todo-done">done</label>
+        </div> -->
+        <!-- using DOM API imperative way -->
+        <!-- <script type="module">
+            const topDiv = document.createElement('div');
+            document.body.appendChild(topDiv);
+
+            const h1 = document.createElement('h1');
+            h1.textContent = 'Todo - buy a new course!';
+            topDiv.append(h1);
+
+            const p = document.createElement('p');
+            p.textContent = 'React JS fundamentals';
+            topDiv.append(p);
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = true;
+            checkbox.name = 'todo-done';
+            checkbox.id = 'todo-done';
+            topDiv.append(checkbox);
+
+            const label = document.createElement('label');
+            label.textContent = 'done';
+            label.htmlFor = 'todo-done';
+            topDiv.append(label);
+        </script> -->
+
+        <!-- Using React -->
+        <script src="https://unpkg.com/react@16.13.1/umd/react.development.js"></script>
+        <script src="https://unpkg.com/react-dom@16.13.1/umd/react-dom.development.js"></script>
+        <div id="root" />
+        <script type="module">
+            const h1 = React.createElement('h1', null, 'Todo - buy a new course!');
+            const h2 = React.createElement('h2', null, 'React JS fundamentals');
+            const checkboxProps = {
+                type: 'checkbox',
+                checked: 'true',
+                name: 'todo-done',
+                id: 'todo-done',
+            };
+            const checkbox = React.createElement('input', checkboxProps);
+
+            const labelProps = {
+                htmlFor: 'todo-done',
+            };
+            const label = React.createElement('label', labelProps, 'done');
+            const container = React.createElement('div', null, [h1, h2, checkbox, label]);
+            ReactDOM.render(container, document.getElementById('root'));
+        </script>
+    </body>
+</html>
