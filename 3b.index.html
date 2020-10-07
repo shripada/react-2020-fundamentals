@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style type="text/css">
+            .heading {
+                background-color: green;
+                color: white;
+            }
+        </style>
+    </head>
+
+    <body>
+        <!--3. Using react scripts from CDN and using them to create elements and render -->
+        <div id="root"></div>
+        <script src="https://unpkg.com/react@16.13.1/umd/react.development.js"></script>
+        <script src="https://unpkg.com/react-dom@16.13.1/umd/react-dom.development.js"></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+        <script type="text/babel">
+            const Greeting = ({ person, color, bgColor }) => {
+                console.log(person, color);
+                return (
+                    <div style={{ color, backgroundColor: bgColor }}>
+                        <h1>Hello</h1>
+                        <h2>{person}</h2>
+                    </div>
+                );
+            };
+
+            const divElement = (
+                <div>
+                    <Greeting person={'John'} color={'#ff0000'} bgColor={'#00ffee'}>
+                        <h1>A H1</h1>
+                        <h2>A h2</h2>
+                    </Greeting>
+                </div>
+            );
+
+            ReactDOM.render(divElement, document.getElementById('root'));
+        </script>
+    </body>
+</html>
