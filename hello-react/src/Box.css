@@ -5,3 +5,11 @@
     height: 100px;
     display: inline-block;
 }
+
+.Box--rounded {
+    border-radius: 50%;
+}
+
+.ThickBorder {
+    border-width: 4px;
+}

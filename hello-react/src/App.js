@@ -7,9 +7,9 @@ import logo from './logo.svg';
 function App() {
     return (
         <div className="App">
-            <Box></Box>
-            <Box></Box>
-            <Box></Box>
+            <Box className="ThickBorder" style={{ color: 'blue' }}>
+                <div> Inside Box</div>
+            </Box>
         </div>
     );
 }
