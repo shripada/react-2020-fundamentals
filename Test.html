@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    div.header{
+      color: red;
+      background-color:#eee;
+    }
+
+    div.header h2 {
+      color:green;
+    }
+
+    .header{
+      font-weight: bold;
+    }
+
+    .trial-icon {
+      /*fill: red;*/
+      color: red;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div>
+    <h2>Plain div</h2>
+  </div>
+  <div class="header">
+    <h2>H2 inside header</h2>
+  </div>
+  <svg class="trial-icon">
+    <use xlink:href="sprite.svg#icon-rss"></use>
+  </svg>
+</body>
+</html>

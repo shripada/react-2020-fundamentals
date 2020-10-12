@@ -1,15 +1,12 @@
 import './App.css';
 
-import Box from './Box';
+import Counter from './Counter';
 import React from 'react';
-import logo from './logo.svg';
 
 function App() {
     return (
         <div className="App">
-            <Box className="ThickBorder" style={{ color: 'blue' }}>
-                <div> Inside Box</div>
-            </Box>
+            <Counter />
         </div>
     );
 }
