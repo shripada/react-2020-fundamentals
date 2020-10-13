@@ -1,28 +1,41 @@
 import './Counter.css';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const Counter = ({ counterBase, upperLimit, lowerLimit }) => {
+import PropTypes from 'prop-types';
+
+const Counter = ({ counterBase, upperLimit, lowerLimit, counterCallback }) => {
     let [count, setCount] = useState(0);
     let [multiplier, setMultiplier] = useState(5);
+    let [data, setData] = useState({ count: 0, multiplier: 1 });
+
+    useEffect(() => {
+        console.log('* Component is rendered');
+        return () => {
+            console.log('component is unmounted');
+        };
+    }, []);
 
     return (
         <div className="Counter">
             <button
                 onClick={() => {
-                    count = count - 1;
-                    console.log('- clicked' + count);
-                    setCount(count);
+                    data.count = data.count - 1;
+                    console.log('clicked: ' + data.count);
+                    setData({ ...data, count: data.count });
+                    // setCount(count);
+                    // counterCallback && counterCallback(count);
                 }}
             >
                 -
             </button>
-            <div className="Label">{count * multiplier}</div>
+            <div className="Label">{data.count * multiplier}</div>
             <button
                 onClick={() => {
                     count = count + 1;
                     console.log('+ clicked', count);
                     setCount(count);
+                    counterCallback && counterCallback(count);
                 }}
             >
                 +
@@ -42,6 +55,11 @@ const Counter = ({ counterBase, upperLimit, lowerLimit }) => {
             </div>
         </div>
     );
+};
+
+Counter.propTypes = {
+    counterCallback: PropTypes.func,
+    counterBase: PropTypes.number.isRequired,
 };
 
 export default Counter;
