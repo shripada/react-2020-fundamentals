@@ -29,8 +29,11 @@ function App() {
             <h1>The most recent value of the counter is:{counter}</h1>
             <button
                 onClick={() => {
-                    setFlag(!flag);
-                    writeToStorage(COUNTER_DISPLAYED, !flag);
+                    setFlag((currentState) => {
+                        let newState = !currentState;
+                        writeToStorage(COUNTER_DISPLAYED, newState);
+                        return newState;
+                    });
                 }}
             >
                 Toggle Counter

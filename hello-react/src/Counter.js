@@ -1,36 +1,19 @@
 import './Counter.css';
 
 import React, { useEffect, useState } from 'react';
+import { readFromStorage, writeToStorage } from './LocalStorage';
 
 import PropTypes from 'prop-types';
+import { useLocalStorageState } from './useLocalStorageState';
 
 const COUNT = 'Count';
 
 const Counter = ({ counterBase, upperLimit, lowerLimit, counterCallback }) => {
-    function readFromStorage(key) {
-        if (typeof window.localStorage !== 'undefined') {
-            console.log(`Reading ${key} from local storage`);
-            // Code for localStorage/sessionStorage.
-            return localStorage.getItem(key);
-        } else {
-            // Sorry! No Web Storage support..
-            throw new Error('Cant read local storage!');
-        }
-    }
-
-    function writeToStorage(key, value) {
-        if (typeof window.localStorage !== 'undefined') {
-            // Code for localStorage/sessionStorage.
-            return localStorage.setItem(key, value);
-        } else {
-            // Sorry! No Web Storage support..
-            throw new Error('Cant write to local storage!');
-        }
-    }
-
     //Use lazy initialisation via a initialisation function as an argument to setState
     // rather than the actual value
-    let [count, setCount] = useState(() => readFromStorage(COUNT) || 0); //useState(readFromStorage(COUNT) || 0);
+    // let [count, setCount] = useState(() => readFromStorage(COUNT) || 0); //useState(readFromStorage(COUNT) || 0);
+
+    let [count, setCount] = useLocalStorageState(0, COUNT);
 
     let [multiplier, setMultiplier] = useState(5);
     let [data, setData] = useState({ count: 0, multiplier: 1 });
