@@ -16,37 +16,62 @@ const Square = ({ value, handleClick }) => {
     );
 };
 
-const Board = () => {
+const Board = ({ board, handleClick }) => {
     function renderSquare(i) {
-        return (
-            <Square
-                value={board[i]}
-                handleClick={() => {
-                    console.log(`square ${i} is clicked`);
-                    //We need to record this interaction in the board state
-                    //1. The square got fresh tap
-                    //2. The square already had a value associated, in other words, board[i] had a non null value
-                    if (board[i] === null && !computeWinner()) {
-                        //Set board state to a new state depending who is the current player
-                        const newBoard = [...board]; //Note, we have to create a new state object, and never mutate the current state and set it back. React wont come to know any state change in this case and there will be no re rendering that is going to happen
-                        newBoard[i] = player;
-                        //Flip the player
-                        setPlayer(player === 'X' ? 'O' : 'X');
-                        //Set the board state
-                        console.log(board);
-                        setBoard(newBoard);
-                    }
-                }}
-            />
-        );
+        return <Square value={board[i]} handleClick={() => handleClick(i)} />;
     }
 
-    const [board, setBoard] = useState(Array(9).fill(null));
+    return (
+        <div>
+            <div className="board-row">
+                {renderSquare(0)}
+                {renderSquare(1)}
+                {renderSquare(2)}
+            </div>
+            <div className="board-row">
+                {renderSquare(3)}
+                {renderSquare(4)}
+                {renderSquare(5)}
+            </div>
+            <div className="board-row">
+                {renderSquare(6)}
+                {renderSquare(7)}
+                {renderSquare(8)}
+            </div>
+        </div>
+    );
+};
+
+const Game = () => {
+    const handleClick = (i) => {
+        console.log(`square ${i} is clicked`);
+        //We need to record this interaction in the board state
+        //1. The square got fresh tap
+        //2. The square already had a value associated, in other words, board[i] had a non null value
+        const board = history[step];
+        if (board[i] === null && !computeWinner(board)) {
+            //Set board state to a new state depending who is the current player
+            //We need to derive the right board for the given step
+            const newBoard = [...board]; //Note, we have to create a new state object, and never mutate the current state and set it back. React wont come to know any state change in this case and there will be no re rendering that is going to happen
+            newBoard[i] = player;
+            //Flip the player
+            setPlayer(player === 'X' ? 'O' : 'X');
+            //Set the board state
+            console.log(board);
+
+            // [initalboard, step1board]
+            const newHistory = history.concat([newBoard]);
+            setHistory(newHistory);
+            //Update the step
+            setStep((prevStep) => prevStep + 1);
+        }
+    };
+
+    const [history, setHistory] = useState([Array(9).fill(null)]);
+    const [step, setStep] = useState(0);
     const [player, setPlayer] = useState('X');
 
-    console.log(board);
-
-    function computeWinner() {
+    function computeWinner(board) {
         const lines = [
             [0, 1, 2],
             [3, 4, 5],
@@ -71,7 +96,7 @@ const Board = () => {
         //and game should end.
         //We can actually derive if there is a winner. We dont need to maintain a seperate state
         //for this.
-        const winner = computeWinner();
+        const winner = computeWinner(history[step]);
         if (winner === null) {
             return `Next player: ${player}`;
         } else {
@@ -79,37 +104,22 @@ const Board = () => {
         }
     }
 
-    return (
-        <div>
-            <div className="status">{status()}</div>
-            <div className="board-row">
-                {renderSquare(0)}
-                {renderSquare(1)}
-                {renderSquare(2)}
-            </div>
-            <div className="board-row">
-                {renderSquare(3)}
-                {renderSquare(4)}
-                {renderSquare(5)}
-            </div>
-            <div className="board-row">
-                {renderSquare(6)}
-                {renderSquare(7)}
-                {renderSquare(8)}
-            </div>
-        </div>
-    );
-};
+    function renderHistory() {
+        return history.map((b, index) => (
+            <li key={index}>{index === 0 ? 'Go to start of the game' : `Goto step${index}`}</li>
+        ));
+    }
 
-const Game = () => {
+    const board = history[step];
+    console.log(board);
     return (
         <div className="game">
             <div className="game-board">
-                <Board />
+                <Board board={history[step]} handleClick={handleClick} />
             </div>
             <div className="game-info">
-                <div>{/* status */}</div>
-                <ol>{/* TODO */}</ol>
+                <div>{status()}</div>
+                <ol>{renderHistory()}</ol>
             </div>
         </div>
     );
