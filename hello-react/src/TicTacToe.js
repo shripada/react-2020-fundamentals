@@ -6,7 +6,9 @@
 
 import './TicTacToe.css';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+
+import Button from './Button';
 
 const Square = ({ value, handleClick }) => {
     return (
@@ -44,12 +46,13 @@ const Board = ({ board, handleClick }) => {
 
 const Game = () => {
     const handleClick = (i) => {
+        const isStepCurrent = () => step === history.length - 1;
         console.log(`square ${i} is clicked`);
         //We need to record this interaction in the board state
         //1. The square got fresh tap
         //2. The square already had a value associated, in other words, board[i] had a non null value
         const board = history[step];
-        if (board[i] === null && !computeWinner(board)) {
+        if (isStepCurrent() && board[i] === null && !computeWinner(board)) {
             //Set board state to a new state depending who is the current player
             //We need to derive the right board for the given step
             const newBoard = [...board]; //Note, we have to create a new state object, and never mutate the current state and set it back. React wont come to know any state change in this case and there will be no re rendering that is going to happen
@@ -106,12 +109,32 @@ const Game = () => {
 
     function renderHistory() {
         return history.map((b, index) => (
-            <li key={index}>{index === 0 ? 'Go to start of the game' : `Goto step${index}`}</li>
+            <li key={index}>
+                <Button selected={index === step} onClick={() => setStep(index)}>
+                    {index === 0 ? 'Go to start of the game' : `Goto step${index}`}
+                </Button>
+            </li>
         ));
     }
 
     const board = history[step];
-    console.log(board);
+
+    const firstPlayerNameFieldRef = useRef(null);
+    console.log(firstPlayerNameFieldRef.current);
+    useEffect(() => {
+        console.log(firstPlayerNameFieldRef.current);
+        if (firstPlayerNameFieldRef.current) {
+            firstPlayerNameFieldRef.current.focus();
+        }
+    }, []);
+
+    let numberOfRenders = 0; //useRef(0);
+
+    useEffect(() => {
+        numberOfRenders += 1;
+        console.log('Number of times rendered = ', numberOfRenders);
+    });
+
     return (
         <div className="game">
             <div className="game-board">
@@ -120,6 +143,10 @@ const Game = () => {
             <div className="game-info">
                 <div>{status()}</div>
                 <ol>{renderHistory()}</ol>
+            </div>
+            <div className="name-inputs">
+                <input ref={firstPlayerNameFieldRef} type={'text'} onChange={() => {}} placeholder={'X'} />
+                <input type={'text'} onChange={() => {}} placeholder={'Y'} />
             </div>
         </div>
     );
