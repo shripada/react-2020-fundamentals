@@ -1,12 +1,6 @@
-// class Square extends React.Component {
-//     render() {
-//         return <button className="square">{/* TODO */}</button>;
-//     }
-// }
-
 import './TicTacToe.css';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import Button from './Button';
 import useTicTacToe from './useTicTacToe';
@@ -48,57 +42,27 @@ const Board = ({ board, winnerLine, handleClick }) => {
 };
 
 const Game = () => {
-    const handleClick = (i) => {
-        const isStepCurrent = () => step === history.length - 1;
-        console.log(`square ${i} is clicked`);
-        //We need to record this interaction in the board state
-        //1. The square got fresh tap
-        //2. The square already had a value associated, in other words, board[i] had a non null value
-        const board = history[step];
-        const [winner] = computeWinner(board);
-        if (isStepCurrent() && board[i] === null && !winner) {
-            //Set board state to a new state depending who is the current player
-            //We need to derive the right board for the given step
-            const newBoard = [...board]; //Note, we have to create a new state object, and never mutate the current state and set it back. React wont come to know any state change in this case and there will be no re rendering that is going to happen
-            newBoard[i] = player;
-            //Flip the player
-            setPlayer(player === 'X' ? 'O' : 'X');
-            //Set the board state
-            console.log(board);
-
-            // [initalboard, step1board]
-            const newHistory = history.concat([newBoard]);
-            setHistory(newHistory);
-            //Update the step
-            setStep(step + 1);
-        }
-    };
-
     // const [history, setHistory] = useState([Array(9).fill(null)]);
     // const [step, setStep] = useState(0);
     // const [player, setPlayer] = useState('X');
 
-    const { history, setHistory, step, setStep, player, setPlayer, resetGame } = useTicTacToe();
+    const {
+        history,
+        setHistory,
+        step,
+        setStep,
+        player,
+        setPlayer,
+        resetGame,
+        computeWinner,
+        processCurrentStepAtIndex,
+    } = useTicTacToe();
 
-    function computeWinner(board) {
-        const lines = [
-            [0, 1, 2],
-            [3, 4, 5],
-            [6, 7, 8],
-            [0, 3, 6],
-            [1, 4, 7],
-            [2, 5, 8],
-            [0, 4, 8],
-            [2, 4, 6],
-        ];
-        for (let i = 0; i < lines.length; i++) {
-            const [a, b, c] = lines[i];
-            if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-                return [board[a], [a, b, c]];
-            }
-        }
-        return [null, null];
-    }
+    const handleClick = (i) => {
+        console.log(`square ${i} is clicked`);
+
+        processCurrentStepAtIndex(i);
+    };
 
     function status() {
         //Check if there is a winner, if so, please show the status that there is a winner,
@@ -126,8 +90,6 @@ const Game = () => {
             </li>
         ));
     }
-
-    const board = history[step];
 
     const firstPlayerNameFieldRef = useRef(null);
     console.log(firstPlayerNameFieldRef.current);
