@@ -48,3 +48,13 @@ ol, ul {
 .game-info {
   margin-left: 20px;
 }
+
+input{
+  display:block;
+  margin-top:10px;
+}
+
+.square-winning {
+  background-color: hsl(180, 50%, 50%);
+  color: white;
+}

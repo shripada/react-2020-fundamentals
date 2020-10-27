@@ -9,18 +9,21 @@ import './TicTacToe.css';
 import React, { useEffect, useRef, useState } from 'react';
 
 import Button from './Button';
+import useTicTacToe from './useTicTacToe';
 
-const Square = ({ value, handleClick }) => {
+const Square = ({ value, winner, handleClick }) => {
+    const classes = `square ${winner ? 'square-winning' : undefined}`;
     return (
-        <button className="square" onClick={handleClick}>
+        <button className={classes} onClick={handleClick}>
             {value}
         </button>
     );
 };
 
-const Board = ({ board, handleClick }) => {
+const Board = ({ board, winnerLine, handleClick }) => {
     function renderSquare(i) {
-        return <Square value={board[i]} handleClick={() => handleClick(i)} />;
+        const winner = (winnerLine && winnerLine.includes(i)) || false;
+        return <Square value={board[i]} winner={winner} handleClick={() => handleClick(i)} />;
     }
 
     return (
@@ -52,7 +55,8 @@ const Game = () => {
         //1. The square got fresh tap
         //2. The square already had a value associated, in other words, board[i] had a non null value
         const board = history[step];
-        if (isStepCurrent() && board[i] === null && !computeWinner(board)) {
+        const [winner] = computeWinner(board);
+        if (isStepCurrent() && board[i] === null && !winner) {
             //Set board state to a new state depending who is the current player
             //We need to derive the right board for the given step
             const newBoard = [...board]; //Note, we have to create a new state object, and never mutate the current state and set it back. React wont come to know any state change in this case and there will be no re rendering that is going to happen
@@ -66,13 +70,15 @@ const Game = () => {
             const newHistory = history.concat([newBoard]);
             setHistory(newHistory);
             //Update the step
-            setStep((prevStep) => prevStep + 1);
+            setStep(step + 1);
         }
     };
 
-    const [history, setHistory] = useState([Array(9).fill(null)]);
-    const [step, setStep] = useState(0);
-    const [player, setPlayer] = useState('X');
+    // const [history, setHistory] = useState([Array(9).fill(null)]);
+    // const [step, setStep] = useState(0);
+    // const [player, setPlayer] = useState('X');
+
+    const { history, setHistory, step, setStep, player, setPlayer, resetGame } = useTicTacToe();
 
     function computeWinner(board) {
         const lines = [
@@ -88,10 +94,10 @@ const Game = () => {
         for (let i = 0; i < lines.length; i++) {
             const [a, b, c] = lines[i];
             if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-                return board[a];
+                return [board[a], [a, b, c]];
             }
         }
-        return null;
+        return [null, null];
     }
 
     function status() {
@@ -99,8 +105,12 @@ const Game = () => {
         //and game should end.
         //We can actually derive if there is a winner. We dont need to maintain a seperate state
         //for this.
-        const winner = computeWinner(history[step]);
+        const [winner] = computeWinner(history[step]);
         if (winner === null) {
+            if (step === 9)
+                //We have filled all the board, this must be a draw
+                return 'Game is drawn!';
+
             return `Next player: ${player}`;
         } else {
             return `Player ${winner} won!`;
@@ -128,17 +138,11 @@ const Game = () => {
         }
     }, []);
 
-    let numberOfRenders = 0; //useRef(0);
-
-    useEffect(() => {
-        numberOfRenders += 1;
-        console.log('Number of times rendered = ', numberOfRenders);
-    });
-
+    const [, winnerLine] = computeWinner(history[step]);
     return (
         <div className="game">
             <div className="game-board">
-                <Board board={history[step]} handleClick={handleClick} />
+                <Board board={history[step]} winnerLine={winnerLine} handleClick={handleClick} />
             </div>
             <div className="game-info">
                 <div>{status()}</div>
@@ -148,6 +152,14 @@ const Game = () => {
                 <input ref={firstPlayerNameFieldRef} type={'text'} onChange={() => {}} placeholder={'X'} />
                 <input type={'text'} onChange={() => {}} placeholder={'Y'} />
             </div>
+            <Button
+                selected={false}
+                onClick={() => {
+                    resetGame();
+                }}
+            >
+                Reset the game
+            </Button>
         </div>
     );
 };
