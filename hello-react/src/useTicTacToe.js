@@ -1,16 +1,112 @@
-import React, { useState } from 'react';
+import React, { useReducer, useState } from 'react';
 
 import { useLocalStorageState } from './useLocalStorageState';
 
+const SET_PLAYER_X_ACTION_TYPE = 'SET_PLAYER_X';
+const SET_PLAYER_Y__ACTION_TYPE = 'SET_PLAYER_Y';
+const RESET_ACTION_TYPE = 'RESET';
+const PLAY_NEXT_STEP_ACTION_TYPE = 'PLAY_NEXT_STEP';
+const GOTO_STEP_ACTION_TYPE = 'GO_TO_STEP';
+
+const initialState = {
+    history: [Array(9).fill(null)],
+    playerX: 'X',
+    playerY: 'Y',
+    currentPlayer: 'X',
+    step: 0,
+    winningLine: [],
+};
+
+//1. Set player X
+const setPlayerX = (playerName) => ({
+    type: SET_PLAYER_X_ACTION_TYPE,
+    playerName,
+});
+
+//2. Set Player Y
+const setPlayerY = (playerName) => ({
+    type: SET_PLAYER_Y__ACTION_TYPE,
+    playerName,
+});
+
+//3. Reset The game
+const resetGameAction = () => ({
+    type: RESET_ACTION_TYPE,
+    initialState,
+});
+
+//4. Play Next Step
+const playNextStep = (index) => ({
+    type: PLAY_NEXT_STEP_ACTION_TYPE,
+    index,
+});
+
+//5. Go to a Step
+function gotToStep(step) {
+    return {
+        type: GOTO_STEP_ACTION_TYPE,
+        step,
+    };
+}
+
 function useTicTacToe() {
-    const [history, setHistory] = useLocalStorageState([Array(9).fill(null)], 'history');
-    const [step, setStep] = useLocalStorageState(0, 'step');
-    const [player, setPlayer] = useLocalStorageState('X', 'currentPlayer');
+    const ticTacToeReducer = (state, action) => {
+        switch (action.type) {
+            case SET_PLAYER_X_ACTION_TYPE:
+                return { ...state, playerX: action.playerName };
+            case SET_PLAYER_Y__ACTION_TYPE:
+                return { ...state, playerY: action.playerName };
+            case RESET_ACTION_TYPE:
+                return action.initialState;
+            case PLAY_NEXT_STEP_ACTION_TYPE:
+                return reduceNextStep(state, action.index);
+            case GOTO_STEP_ACTION_TYPE:
+                if (action.step >= 0 && action.step < 10) {
+                    return { ...state, step: action.step };
+                } else {
+                    throw new Error('Step needs to be within 0 and 10!');
+                    return state;
+                }
+
+            default:
+                return state;
+        }
+    };
+
+    function reduceNextStep(state, index) {
+        if (index < 0 || index > 8) {
+            throw new Error('A wrong value for the index is encountered');
+        }
+
+        //Get the most recent history from history, and
+        //make a copy of it.
+        let { history, step, currentPlayer, playerX, playerY } = state;
+
+        const board = history[step];
+        const [winner] = computeWinner(board);
+        const isStepCurrent = () => step === history.length - 1;
+
+        if (isStepCurrent() && board[index] === null && !winner) {
+            const prevHistory = history[step];
+            const newHistory = [...prevHistory];
+            newHistory[index] = currentPlayer;
+
+            //Concatenate the history
+            history = history.concat([newHistory]);
+
+            //Change the player for the next turn
+            currentPlayer = currentPlayer === playerX ? playerY : playerX;
+            //Indicate we want to play next step
+            step += 1;
+
+            return { ...state, history, step, currentPlayer };
+        }
+    }
+
+    const [state, dispatch] = useReducer(ticTacToeReducer, initialState);
 
     function resetGame() {
-        setHistory([Array(9).fill(null)]);
-        setStep(0);
-        setPlayer('X');
+        dispatch(resetGameAction());
     }
 
     function computeWinner(board) {
@@ -34,33 +130,22 @@ function useTicTacToe() {
     }
 
     function processCurrentStepAtIndex(i) {
-        const board = history[step];
-        const [winner] = computeWinner(board);
-        const isStepCurrent = () => step === history.length - 1;
-        if (isStepCurrent() && board[i] === null && !winner) {
-            //Set board state to a new state depending who is the current player
-            //We need to derive the right board for the given step
-            const newBoard = [...board]; //Note, we have to create a new state object, and never mutate the current state and set it back. React wont come to know any state change in this case and there will be no re rendering that is going to happen
-            newBoard[i] = player;
-            //Flip the player
-            setPlayer(player === 'X' ? 'O' : 'X');
-            //Set the board state
+        dispatch(playNextStep(11));
+    }
 
-            // [initalboard, step1board]
-            const newHistory = history.concat([newBoard]);
-            setHistory(newHistory);
-            //Update the step
-            setStep(step + 1);
-        }
+    const history = state.history;
+    const step = state.step;
+    const player = state.currentPlayer;
+
+    function setStep(nextStep) {
+        dispatch(gotToStep(nextStep));
     }
 
     return {
         history,
         step,
         player,
-        setHistory,
         setStep,
-        setPlayer,
         resetGame,
         computeWinner,
         processCurrentStepAtIndex,

@@ -46,17 +46,7 @@ const Game = () => {
     // const [step, setStep] = useState(0);
     // const [player, setPlayer] = useState('X');
 
-    const {
-        history,
-        setHistory,
-        step,
-        setStep,
-        player,
-        setPlayer,
-        resetGame,
-        computeWinner,
-        processCurrentStepAtIndex,
-    } = useTicTacToe();
+    const { history, step, setStep, player, resetGame, computeWinner, processCurrentStepAtIndex } = useTicTacToe();
 
     const handleClick = (i) => {
         console.log(`square ${i} is clicked`);
